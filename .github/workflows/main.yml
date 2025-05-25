@@ -28,13 +28,13 @@ jobs:
 
       - name: Exibir IP do túnel (esperando túnel aparecer)
         run: |
-          for i in {1..15}; do
+          for i in {1..30}; do
             URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' | sed 's/tcp:\/\///')
             if [[ "$URL" == *tcp.ngrok.io* ]]; then
               echo "🔗 Túnel ativo: $URL"
               break
             fi
-            echo "⏳ Aguardando túnel..."
+            echo "⏳ Aguardando túnel... ($i)"
             sleep 4
           done
 
