@@ -39,4 +39,4 @@ jobs:
           done
 
       - name: VPS rodando por 6h
-        run:
+        run: sleep 21600
