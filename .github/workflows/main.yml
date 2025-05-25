@@ -19,9 +19,9 @@ jobs:
           sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
           sudo systemctl restart ssh
 
-      - name: Instalar ngrok v3 e iniciar túnel com debug
+      - name: Instalar ngrok v3.8.1 e iniciar túnel com debug
         run: |
-          wget https://github.com/ngrok/ngrok/releases/download/v3.9.0/ngrok-v3-stable-linux-amd64.tgz
+          wget https://github.com/ngrok/ngrok/releases/download/v3.8.1/ngrok-v3-stable-linux-amd64.tgz
           tar -xzf ngrok-v3-stable-linux-amd64.tgz
           sudo mv ngrok /usr/local/bin/
           ngrok version
