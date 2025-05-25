@@ -10,7 +10,7 @@ jobs:
       - name: Instalar dependências
         run: |
           sudo apt update
-          sudo apt install -y openssh-server curl unzip jq
+          sudo apt install -y openssh-server curl unzip jq tar
           sudo systemctl start ssh
           sudo useradd -m -s /bin/bash pradox
           echo 'pradox:1234' | sudo chpasswd
@@ -19,12 +19,18 @@ jobs:
           sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
           sudo systemctl restart ssh
 
-      - name: Instalar ngrok e iniciar túnel
+      - name: Instalar ngrok v3 e iniciar túnel com debug
         run: |
-          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-          unzip ngrok-stable-linux-amd64.zip
-          ./ngrok authtoken ${{ secrets.NGROK_TOKEN }}
-          nohup ./ngrok tcp 22 &
+          wget https://github.com/ngrok/ngrok/releases/download/v3.9.0/ngrok-v3-stable-linux-amd64.tgz
+          tar -xzf ngrok-v3-stable-linux-amd64.tgz
+          sudo mv ngrok /usr/local/bin/
+          ngrok version
+          ngrok config add-authtoken ${{ secrets.NGROK_TOKEN }}
+          ngrok tcp 22 > ngrok.log 2>&1 &
+          sleep 8
+          echo "======= NGROK LOG INÍCIO ======="
+          cat ngrok.log
+          echo "======== NGROK LOG FIM ========="
 
       - name: Exibir IP do túnel (esperando túnel aparecer)
         run: |
