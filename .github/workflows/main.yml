@@ -1,0 +1,35 @@
+name: VPS Pirata Grátis
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar dependências
+        run: |
+          sudo apt update
+          sudo apt install -y openssh-server curl unzip jq
+          sudo systemctl start ssh
+          sudo useradd -m -s /bin/bash pradox
+          echo 'pradox:1234' | sudo chpasswd
+          echo 'root:1234' | sudo chpasswd
+          sudo sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+          sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          sudo systemctl restart ssh
+
+      - name: Instalar ngrok e iniciar túnel
+        run: |
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+          ./ngrok authtoken ${{ secrets.NGROK_TOKEN }}
+          nohup ./ngrok tcp 22 &
+
+      - name: Exibir IP do túnel (aguarde 10s)
+        run: |
+          sleep 10
+          curl -s http://127.0.0.1:4040/api/tunnels | jq -r '.tunnels[0].public_url' | sed 's/tcp:\/\///'
+
+      - name: VPS rodando por 6h
+        run: sleep 21600
